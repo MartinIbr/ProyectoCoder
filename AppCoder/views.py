@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from .models import curso
+from .models import curso, profesor
+from .forms import ProfesorForm
 from django.http import HttpResponse
 
 # Create your views here.
@@ -21,7 +22,24 @@ def cursos(request):
     return render(request, "AppCoder/cursos.html")
 
 def profesores(request):
-    return render(request, "AppCoder/profesores.html")
+    
+    if request.method == "POST":
+        form = ProfesorForm(request.POST)
+        if form.is_valid():
+            Profesor = profesor()
+            Profesor.nombre = form.cleaned_data['nombre']
+            Profesor.apellido = form.cleaned_data['apellido']
+            Profesor.email = form.cleaned_data['email']
+            Profesor.profesion = form.cleaned_data['profesion']
+            Profesor.save()
+            form = ProfesorForm()
+    else:
+        form = ProfesorForm()
+
+
+    profesores = profesor.objects.all()
+    context = {"profesores": profesores, "form" : form}
+    return render(request, "AppCoder/profesores.html", context)
 
 def estudiantes(request):
     return render(request, "AppCoder/estudiantes.html")
